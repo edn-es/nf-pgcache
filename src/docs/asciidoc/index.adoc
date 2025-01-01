@@ -1,0 +1,137 @@
+= nf-pgcache: a Nextflow Plugin to use PostgreSQL as cache
+Jorge Aguilera <jorge@edn.es>
+v0.0.1
+:toc: left
+
+This document provides an overview of the PostgreSQL Cache Plugin for Nextflow, designed to use PostgreSQL as a backend for storing execution cache data.
+
+== Introduction
+
+Nextflow's PostgreSQL Cache Plugin enables the storage of task execution metadata in a PostgreSQL database, ensuring data persistence and scalability. This plugin is particularly useful for workflows that require robust, centralized caching mechanisms across distributed environments.
+
+== Features
+
+- **Centralized Cache Storage**: Utilizes PostgreSQL for consistent and reliable task execution caching.
+- **Scalability**: Supports large-scale workflows with extensive caching needs.
+- **Fault Tolerance**: Ensures data persistence even in the event of node failures.
+- **Compatibility**: Seamlessly integrates with Nextflow's core caching framework.
+
+== Prerequisites
+
+Before using the PostgreSQL Cache Plugin, ensure the following requirements are met:
+
+- A running PostgreSQL instance (version 11 or higher is recommended).
+- Proper access credentials (username, password, host, and port) for the PostgreSQL database.
+- Nextflow version 22.10.0 or newer.
+
+== Installation
+
+To install the PostgreSQL Cache Plugin, add the plugin to your `nextflow.config` file:
+
+.nextflow.config
+[source,groovy]
+----
+plugins {
+    id "nf-pgcache@0.0.1"
+}
+----
+
+== Configuration
+
+Configure the plugin by adding the PostgreSQL connection details to your `nextflow.config` file:
+
+.nextflow.config
+[source,groovy]
+----
+pgcache{
+    host="localhost"
+    port=5432
+    database="postgres"
+    user="user1"
+    password="password1"
+}
+----
+
+Replace `<host>`, `<port>`, `<database>`, `<username>`, and `<password>` with the appropriate values for your PostgreSQL setup.
+
+== Usage
+
+Once the plugin is installed and configured, it will automatically handle caching for your Nextflow workflows.
+
+== Example
+
+Here is an example of a simple workflow leveraging the PostgreSQL Cache Plugin:
+
+[source,nextflow]
+----
+process sayHello {
+  input:
+  val x
+  output:
+  stdout
+  script:
+  """
+    echo $x
+  """
+}
+
+workflow {
+  Channel.of('Bonjour', 'Ciao', 'Hello', 'Hola') | sayHello | view
+}
+----
+
+Run the workflow with:
+
+```
+nextflow run myWorkflow.nf -resume
+```
+
+== Troubleshooting
+
+If you encounter issues, ensure the following:
+
+1. PostgreSQL is running and accessible.
+2. The database credentials in `nextflow.config` are correct.
+3. Required firewall or network settings are properly configured.
+
+
+== Supabase
+
+The PostgreSQL Cache Plugin can also be used with a Supabase project.
+Supabase provides a hosted PostgreSQL database that can be accessed from remote cloud machines.
+This makes it an excellent choice for workflows running in cloud environments.
+
+To configure the plugin for Supabase, follow these steps:
+
+1. Create a Supabase project at https://supabase.com.
+2. Retrieve the database connection details from the Supabase dashboard, including the database URL, username, and password.
+3. Update your `nextflow.config` file with the Supabase connection details:
+
+[source,groovy]
+----
+pgcache{
+    host="aws-0-eu-west-1.pooler.supabase.com"
+    port=6543
+    database="postgres"
+    user="postgres.xxxxxx"
+    password="yyyyyy"
+}
+----
+
+Ensure your cloud machines can reach the Supabase database.
+Supabase provides public endpoints accessible over the internet, but you may need to configure network security rules for your environment.
+
+Using Supabase with the PostgreSQL Cache Plugin ensures reliable, cloud-accessible caching for distributed workflows.
+
+== License
+
+This plugin is licensed under the MIT License.
+
+== Contributing
+
+Contributions are welcome! Please submit issues or pull requests to the project's GitHub repository.
+
+== Contact
+
+For support, contact the EDN team or refer to the plugin documentation at
+https://edn-es.github.io/ng-pgcache/index.html

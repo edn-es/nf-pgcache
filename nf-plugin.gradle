@@ -1,0 +1,25 @@
+group 'es.edn' // change it in case you want to publish in maven
+
+
+nextflowPlugin{
+    githubOrganization = publish_repoOwner
+
+    // pluginClassName, if not specified, can be calculated by gradle tasks
+    // pluginClassName = 'com.nextflow.plugin.ExamplePlugin'
+
+    // GenerateIdx scan your classes and generate the idx.
+    // In case you want to specify which extensions to use you can use extensionPoints
+    extensionPoints = [
+        // i.e 'com.nextflow.plugin.ExampleFunctions'
+    ]
+}
+
+
+dependencies {
+    // ADD HERE PLUGINS DEPENDENCIES
+    implementation('org.apache.groovy:groovy-sql:4.0.21'){
+        exclude group:'org.apache.groovy'
+    }
+    implementation 'org.postgresql:postgresql:42.7.2'
+
+}

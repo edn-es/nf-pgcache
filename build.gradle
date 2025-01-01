@@ -1,0 +1,187 @@
+import nextflow.plugins.NextflowPlugin
+
+plugins {
+    id "java"
+    id "groovy"
+    id "idea"
+    id 'org.asciidoctor.jvm.convert'
+    id 'maven-publish'
+    id 'org.jreleaser' version '1.9.0'
+    id("io.github.gradle-nexus.publish-plugin") version '1.3.0'
+    id 'signing'
+}
+apply plugin: NextflowPlugin
+
+group 'es.edn'
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    // see https://docs.gradle.org/4.1/userguide/dependency_management.html#sub:exclude_transitive_dependencies
+    runtimeClasspath.exclude group: 'org.slf4j', module: 'slf4j-api'
+}
+
+apply from:'nf-plugin.gradle'
+
+dependencies {
+    // This dependency is exported to consumers, that is to say found on their compile classpath.
+    compileOnly "io.nextflow:nextflow:$nextflowPlugin.nextflowVersion"
+    compileOnly 'org.slf4j:slf4j-api:1.7.10'
+    compileOnly 'org.pf4j:pf4j:3.4.1'
+
+    // test configuration
+    testImplementation "org.apache.groovy:groovy:4.0.21"
+    testImplementation "org.apache.groovy:groovy-nio:4.0.21"
+    testImplementation "io.nextflow:nextflow:$nextflowPlugin.nextflowVersion"
+    testImplementation "io.nextflow:nf-commons:$nextflowPlugin.nextflowVersion"
+    testImplementation ("org.apache.groovy:groovy-test:4.0.21") { exclude group: 'org.apache.groovy' }
+    testImplementation ("cglib:cglib-nodep:3.3.0")
+    testImplementation ("org.objenesis:objenesis:3.1")
+    testImplementation ("org.spockframework:spock-core:2.3-groovy-4.0") { exclude group: 'org.apache.groovy'; exclude group: 'net.bytebuddy' }
+    testImplementation ('org.spockframework:spock-junit4:2.3-groovy-4.0') { exclude group: 'org.apache.groovy'; exclude group: 'net.bytebuddy' }
+    testImplementation ('com.google.jimfs:jimfs:1.1')
+    testImplementation(testFixtures("io.nextflow:nextflow:$nextflowPlugin.nextflowVersion"))
+    testImplementation(testFixtures("io.nextflow:nf-commons:$nextflowPlugin.nextflowVersion"))
+
+    modules {
+        module("commons-logging:commons-logging") { replacedBy("org.slf4j:jcl-over-slf4j") }
+    }
+}
+
+// use JUnit 5 platform
+test {
+    useJUnitPlatform()
+    jvmArgs '--add-opens=java.base/java.lang=ALL-UNNAMED'
+}
+
+// package
+jar {
+    manifest {
+        attributes(
+                'Manifest-Version':'1.0',
+                'Plugin-Id': project.name,
+                'Plugin-Version': archiveVersion,
+                'Plugin-Class': nextflowPlugin.pluginClassName,
+                'Plugin-Provider': 'EDN',
+                'Plugin-Requires': '>=24.10.0',
+        )
+    }
+}
+
+java {
+    withJavadocJar()
+    withSourcesJar()
+
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(19)
+    }
+}
+
+compileJava {
+    options.release.set(11)
+}
+
+tasks.withType(GroovyCompile) {
+    sourceCompatibility = '11'
+    targetCompatibility = '11'
+}
+
+tasks.withType(Jar) {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = "$project.group"
+            artifactId = "$project.name"
+
+            artifact source: zipPlugin, extension: 'zip'
+
+            pom {
+                name = "$project.name"
+                description = 'Nextflow Plugin'
+                url = 'https://github.com/edn-es/nf-pgcache'
+                inceptionYear = '2023'
+                licenses {
+                    license {
+                        name = 'Apache-2.0'
+                        url = 'https://spdx.org/licenses/Apache-2.0.html'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'jagedn'
+                        name = 'Jorge Aguilera'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:https://github.com/edn-es/nf-pgcache.git'
+                    developerConnection = 'scm:git:ssh://github.com/edn-es/nf-pgcache.git'
+                    url = 'http://github.com/edn-es/nf-pgcache'
+                }
+            }
+        }
+    }
+
+    repositories {
+        maven {
+            url = layout.buildDirectory.dir('staging-deploy')
+        }
+    }
+}
+
+jreleaser {
+    project {
+        authors = [publish_developer]
+        license = 'Apache-2.0'
+        links {
+            homepage = publish_url
+        }
+        inceptionYear = publish_year
+        description publish_description
+    }
+
+    distributions {
+        app {
+            active = 'ALWAYS'
+            artifact {
+                path = 'build/plugin/{{projectName}}-{{projectVersion}}.zip'
+            }
+            artifact {
+                path = 'build/plugin/{{projectName}}-{{projectVersion}}-meta.json'
+            }
+        }
+    }
+
+    release {
+        github {
+            enabled = true
+            repoOwner = publish_repoOwner
+            overwrite = true
+            changelog{
+                formatted "ALWAYS"
+                contributors {
+                    format = '- {{contributorName}}{{#contributorUsernameAsLink}} ({{.}}){{/contributorUsernameAsLink}}'
+                }
+            }
+            token = System.properties['JRELEASER_GITHUB_TOKEN'] ?: findProperty('JRELEASER_GITHUB_TOKEN')
+        }
+    }
+}
+
+signing {
+    sign publishing.publications.maven
+}
+
+
+nexusPublishing {
+    repositories {
+        sonatype {  //only for users registered in Sonatype after 24 Feb 2021
+            nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
+            snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
+        }
+    }
+}

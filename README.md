@@ -1,0 +1,2 @@
+# Nextflow PostgreSQL cache
+
