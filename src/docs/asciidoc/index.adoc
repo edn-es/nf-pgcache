@@ -1,7 +1,5 @@
-= nf-pgcache
-PostgreSQL cache for Nextflow
+= nf-pgcache: PostgreSQL cache for Nextflow
 Jorge Aguilera <jorge@edn.es>
-v0.0.1
 :toc: left
 
 This document provides an overview of the PostgreSQL Cache Plugin for Nextflow, designed to use PostgreSQL as a backend for storing execution cache data.

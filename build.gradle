@@ -44,6 +44,7 @@ dependencies {
     testImplementation ('com.google.jimfs:jimfs:1.1')
     testImplementation(testFixtures("io.nextflow:nextflow:$nextflowPlugin.nextflowVersion"))
     testImplementation(testFixtures("io.nextflow:nf-commons:$nextflowPlugin.nextflowVersion"))
+    testImplementation 'org.testcontainers:postgresql:1.20.0'
 
     modules {
         module("commons-logging:commons-logging") { replacedBy("org.slf4j:jcl-over-slf4j") }

@@ -6,6 +6,8 @@ import nextflow.plugin.TestPluginDescriptorFinder
 import nextflow.plugin.TestPluginManager
 import nextflow.plugin.extension.PluginExtensionProvider
 import org.pf4j.PluginDescriptorFinder
+import org.testcontainers.containers.PostgreSQLContainer
+import org.testcontainers.utility.DockerImageName
 import spock.lang.Shared
 import test.Dsl2Spec
 import test.MockScriptRunner
@@ -16,7 +18,23 @@ import java.util.jar.Manifest
 
 class PluginTest extends Dsl2Spec{
 
+    static PostgreSQLContainer postgresql = new PostgreSQLContainer<>(DockerImageName.parse("postgres:11"))
+            .withDatabaseName("database")
+            .withUsername("user1")
+            .withPassword("password1")
+
+    @Shared
+    PostgreSQLContainer postgresqlContainer = postgresql
+
     @Shared String pluginsMode
+
+    def setupSpec(){
+        postgresqlContainer.start()
+    }
+
+    def cleanupSpec(){
+        postgresqlContainer.stop()
+    }
 
     def setup() {
         // reset previous instances
@@ -59,11 +77,11 @@ class PluginTest extends Dsl2Spec{
         and:
         def result = new MockScriptRunner([
                 pgcache:[
-                        host:"aws-0-eu-west-1.pooler.supabase.com",
-                        port:6543,
+                        host:postgresqlContainer.host,
+                        port:postgresqlContainer.firstMappedPort,
                         database:"postgres",
-                        user: System.getenv("SUPABASE_USERNAME"),
-                        password: System.getenv("SUPABASE_PASSWORD"),
+                        user: "user1",
+                        password: "password1",
                 ]
         ]).setScript(SCRIPT).execute()
         then:
