@@ -1,4 +1,5 @@
-= nf-pgcache: a Nextflow Plugin to use PostgreSQL as cache
+= nf-pgcache
+PostgreSQL cache for Nextflow
 Jorge Aguilera <jorge@edn.es>
 v0.0.1
 :toc: left
@@ -8,6 +9,10 @@ This document provides an overview of the PostgreSQL Cache Plugin for Nextflow, 
 == Introduction
 
 Nextflow's PostgreSQL Cache Plugin enables the storage of task execution metadata in a PostgreSQL database, ensuring data persistence and scalability. This plugin is particularly useful for workflows that require robust, centralized caching mechanisms across distributed environments.
+
+== Changelog
+
+- 2025-01-01 Initial version, nf-pgcache@0.0.1-rc2
 
 == Features
 
