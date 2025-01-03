@@ -1,6 +1,7 @@
 = nf-pgcache: PostgreSQL cache for Nextflow
 Jorge Aguilera <jorge@edn.es>
 :toc: left
+:imagesdir: images
 
 This document provides an overview of the PostgreSQL Cache Plugin for Nextflow, designed to use PostgreSQL as a backend for storing execution cache data.
 
@@ -98,7 +99,12 @@ If you encounter issues, ensure the following:
 3. Required firewall or network settings are properly configured.
 
 
-== Supabase
+== Serverless options
+
+In case you can't allocate a postgresql instance or your infrastructure doesnt allow it, you can try to
+use a serverless options as Supabase or Neon
+
+=== Supabase
 
 The PostgreSQL Cache Plugin can also be used with a Supabase project.
 Supabase provides a hosted PostgreSQL database that can be accessed from remote cloud machines.
@@ -127,8 +133,10 @@ Supabase provides public endpoints accessible over the internet, but you may nee
 
 Using Supabase with the PostgreSQL Cache Plugin ensures reliable, cloud-accessible caching for distributed workflows.
 
+image::supabase.png[]
 
-== Neon
+
+=== Neon
 
 Similar to Supabase you can use Neon (https://neon.tech), another Open Source project who allow to you create a Postgre instance in a few seconds
 
@@ -145,6 +153,8 @@ pgcache{
 }
 ----
 <1> Neon use the default postgresql port
+
+image::neon.png[]
 
 
 == License

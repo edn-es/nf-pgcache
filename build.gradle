@@ -93,6 +93,18 @@ tasks.withType(Jar) {
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
 
+
+asciidoctor{
+
+  resources {
+    from('src/docs/asciidoc/images') {
+      include '**/*.png'
+    }
+
+    into './images'
+  }
+}
+
 publishing {
     publications {
         maven(MavenPublication) {
