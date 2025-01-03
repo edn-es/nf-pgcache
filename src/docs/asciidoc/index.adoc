@@ -114,17 +114,38 @@ To configure the plugin for Supabase, follow these steps:
 ----
 pgcache{
     host="aws-0-eu-west-1.pooler.supabase.com"
-    port=6543
+    port=6543  //<1>
     database="postgres"
     user="postgres.xxxxxx"
     password="yyyyyy"
 }
 ----
+<1> Pay attention supabase use non default port
 
 Ensure your cloud machines can reach the Supabase database.
 Supabase provides public endpoints accessible over the internet, but you may need to configure network security rules for your environment.
 
 Using Supabase with the PostgreSQL Cache Plugin ensures reliable, cloud-accessible caching for distributed workflows.
+
+
+== Neon
+
+Similar to Supabase you can use Neon (https://neon.tech), another Open Source project who allow to you create a Postgre instance in a few seconds
+
+Steps are very similar to Supabase so once you've created your project you'll be able to retrieve the config and creds to start using the database as cache
+
+[source,groovy]
+----
+pgcache{
+    host="ep-young-flower-b2xs0gwi.eu-central-1.aws.neon.tech"
+    port=5432  //<1>
+    database="cache-demo"
+    user=System.getenv("NEON_USER")
+    password= System.getenv("NEON_PASSWORD")
+}
+----
+<1> Neon use the default postgresql port
+
 
 == License
 
