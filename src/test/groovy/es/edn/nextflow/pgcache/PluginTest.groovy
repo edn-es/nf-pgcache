@@ -79,7 +79,7 @@ class PluginTest extends Dsl2Spec{
                 pgcache:[
                         host:postgresqlContainer.host,
                         port:postgresqlContainer.firstMappedPort,
-                        database:"postgres",
+                        database:"database",
                         user: "user1",
                         password: "password1",
                 ]
