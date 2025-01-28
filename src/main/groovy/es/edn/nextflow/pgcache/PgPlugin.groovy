@@ -25,14 +25,17 @@
 
 package es.edn.nextflow.pgcache
 
+import com.beust.jcommander.JCommander
+import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
+import nextflow.cli.PluginAbstractExec
 import nextflow.plugin.BasePlugin
 import org.pf4j.PluginWrapper
 
 @CompileStatic
 @Slf4j
-class PgPlugin extends BasePlugin{
+class PgPlugin extends BasePlugin implements PluginAbstractExec{
 
     PgPlugin(PluginWrapper wrapper) {
         super(wrapper)
@@ -41,5 +44,28 @@ class PgPlugin extends BasePlugin{
 
     private void initPlugin(){
         log.info "${this.class.name} plugin initialized"
+    }
+
+    @Override
+    List<String> getCommands() {
+        return ['log']
+    }
+
+    @Override
+    int exec(String cmd, List<String> args) {
+        return switch (cmd){
+            case 'log'-> log(args)
+            default -> -1
+        }
+    }
+
+    //@CompileDynamic
+    int log(List<String>args){
+        PgLog pgLog = new PgLog()
+        def jc = new JCommander()
+        jc.addObject(pgLog)
+        jc.parse(args as String[])
+        pgLog.run()
+        0
     }
 }
