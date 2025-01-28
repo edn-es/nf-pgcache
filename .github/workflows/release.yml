@@ -62,18 +62,21 @@ jobs:
       - name: Prepare
         run: ./gradlew jreleaserConfig
         env:
+          JRELEASER_TAG_NAME: ${{ needs.precheck.outputs.VERSION }}
           JRELEASER_PROJECT_VERSION: ${{ needs.precheck.outputs.VERSION }}
           JRELEASER_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Assemble
         run: ./gradlew jreleaserAssemble
         env:
+          JRELEASER_TAG_NAME: ${{ needs.precheck.outputs.VERSION }}
           JRELEASER_PROJECT_VERSION: ${{ needs.precheck.outputs.VERSION }}
           JRELEASER_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Release
         run: ./gradlew jreleaserRelease
         env:
+          JRELEASER_TAG_NAME: ${{ needs.precheck.outputs.VERSION }}
           JRELEASER_PROJECT_VERSION: ${{ needs.precheck.outputs.VERSION }}
           JRELEASER_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
