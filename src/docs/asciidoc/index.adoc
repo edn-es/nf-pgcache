@@ -11,7 +11,10 @@ Nextflow's PostgreSQL Cache Plugin enables the storage of task execution metadat
 
 == Changelog
 
-- 2025-01-01 Initial version, nf-pgcache@0.0.1-rc2
+- 2025-01-28 Release 1.0.0
+* add log command
+
+- 2025-01-01 Initial version 0.0.1-rc2
 
 == Features
 
@@ -26,7 +29,7 @@ Before using the PostgreSQL Cache Plugin, ensure the following requirements are 
 
 - A running PostgreSQL instance (version 11 or higher is recommended).
 - Proper access credentials (username, password, host, and port) for the PostgreSQL database.
-- Nextflow version 22.10.0 or newer.
+- Nextflow version 22.10.0 or newer. If you want to use new `log` command you need to use 24.11.0 or newer
 
 == Installation
 
@@ -89,6 +92,29 @@ Run the workflow with:
 ```
 nextflow run myWorkflow.nf -resume
 ```
+
+== Console log
+
+You can check the cache status using the `log` command:
+
+`nextflow plugin nf-pgcache:log`
+
+```
+TIMESTAMP               DURATION        RUN NAME                STATUS  REVISION ID     SESSION ID                              COMMAND
+2025-01-28 10:06:38     11.9s           elated_noyce            ERR     5a90025ed9      5276a9cb-1999-4b95-bf8d-563a22373710    nextflow run main.nf -resume -c local.config
+2025-01-28 10:07:02     11.6s           distracted_mcnulty      ERR     5a90025ed9      5276a9cb-1999-4b95-bf8d-563a22373710    nextflow run main.nf -resume -c local.config
+2025-01-28 10:20:30     11.5s           crazy_wright            ERR     5a90025ed9      5276a9cb-1999-4b95-bf8d-563a22373710    nextflow run main.nf -resume -c local.config
+
+```
+
+If you use a recent nextflow version you can provide parameters to the `log` command
+
+`nextflow plugin nf-pgcache:log --s '<->' `
+
+`nextflow plugin nf-pgcache:log --fields timestamp,runame `
+
+The idea is to use the same standard parameters as `nextflow log` command
+
 
 == Troubleshooting
 
